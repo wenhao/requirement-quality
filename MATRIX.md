@@ -42,9 +42,9 @@
 ## 统计
 
 - 已覆盖格子：**1 / 288**（S01×P1）
-- 已验证样本：1（合成）
-- 待验证候选：2（CAND-002、CAND-003，见 [CANDIDATES.md](docs/CANDIDATES.md)）
-- 未入矩阵的历史样本：`cases/form/2026-10-20-no-field-validation.md`（早于标签体系，同为 S01×P1，待补标签）
+- 已验证样本：1（合成候选 CAND-001 验证后与既有样本合并，见 [CANDIDATES.md](docs/CANDIDATES.md)）
+- 待验证候选：2（CAND-002、CAND-003）
+- 保留样本：`cases/form/no-field-validation.md`（S01×P1，含 CAND-001 验证旁证与超集检测规则）
 
 ## 维护规则
 
