@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>需求有效性治理方案 — requirement-quality</title>
+<style>
+  :root{
+    --ink:#1a2233; --sub:#5b6478; --faint:#8a93a8;
+    --line:#e4e8f0; --bg:#f6f8fb; --card:#ffffff;
+    --blue:#2563eb; --blue-bg:#eef4fe; --blue-line#d0e0fc;
+    --orange:#ea580c; --orange-bg:#fdf1e7;
+    --purple:#7c3aed; --purple-bg:#f4eefe;
+    --teal:#0d9488; --teal-bg:#e8f7f5;
+    --green:#16a34a; --red:#dc2626; --amber:#d97706;
+    --radius:14px;
+    --font:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Segoe UI",sans-serif;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.75;font-size:15px}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 28px 80px}
+
+  /* hero */
+  .hero{background:linear-gradient(135deg,#101a33 0%,#1b2a55 55%,#23407c 100%);color:#fff;padding:64px 0 56px;margin-bottom:48px}
+  .hero .wrap{padding-bottom:0}
+  .hero .kicker{letter-spacing:.35em;font-size:12px;color:#9db4e6;margin-bottom:14px}
+  .hero h1{font-size:34px;font-weight:700;letter-spacing:.02em;margin-bottom:14px}
+  .hero p.lead{color:#c6d4f2;max-width:760px;font-size:15.5px}
+  .stats{display:flex;gap:16px;margin-top:34px;flex-wrap:wrap}
+  .stat{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:14px 22px;min-width:130px}
+  .stat b{display:block;font-size:26px;font-weight:700;color:#fff}
+  .stat span{font-size:12.5px;color:#a9bce8}
+
+  /* section */
+  section{margin-bottom:56px}
+  h2{font-size:22px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+  h2 .no{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;background:var(--ink);color:#fff;font-size:14px;font-weight:600;flex:none}
+  .sub{color:var(--sub);margin-bottom:22px;font-size:14.5px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:26px 28px;box-shadow:0 1px 3px rgba(16,26,51,.04)}
+
+  /* tags */
+  .fam{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+  @media(max-width:860px){.fam{grid-template-columns:1fr}}
+  .fam-card{border-radius:12px;padding:18px 20px;border:1px solid var(--line)}
+  .fam-card.f-blue{background:var(--blue-bg);border-color:#cfe0fc}
+  .fam-card.f-orange{background:var(--orange-bg);border-color:#f6dcc6}
+  .fam-card.f-purple{background:var(--purple-bg);border-color:#e4d8fb}
+  .fam-card h4{font-size:13.5px;margin-bottom:4px}
+  .fam-card .fd{font-size:12.5px;color:var(--sub);margin-bottom:12px}
+  .f-blue h4{color:var(--blue)} .f-orange h4{color:var(--orange)} .f-purple h4{color:var(--purple)}
+  .tag{display:flex;gap:10px;align-items:baseline;padding:7px 0;border-top:1px dashed rgba(0,0,0,.1);font-size:13.5px}
+  .tag b{font-family:var(--mono);font-size:12.5px;flex:none}
+  .f-blue .tag b{color:var(--blue)} .f-orange .tag b{color:var(--orange)} .f-purple .tag b{color:var(--purple)}
+  .tag span{color:var(--sub)}
+  .tag span em{font-style:normal;color:var(--ink)}
+
+  /* framework diagram */
+  .frame{display:grid;grid-template-columns:1fr 96px 1fr;gap:0;align-items:stretch}
+  @media(max-width:900px){.frame{grid-template-columns:1fr}}
+  .fcol{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+  .fcol h3{font-size:15px;margin-bottom:2px}
+  .fcol .fc-q{font-size:12px;color:var(--faint);margin-bottom:14px;letter-spacing:.08em}
+  .farrow{display:flex;align-items:center;justify-content:center;color:#b6c0d4;font-size:26px}
+  @media(max-width:900px){.farrow{transform:rotate(90deg);height:44px}}
+  .layer-badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 10px;border-radius:99px;margin-bottom:10px;letter-spacing:.05em}
+  .lb1{background:var(--blue-bg);color:var(--blue)} .lb2{background:var(--teal-bg);color:var(--teal)} .lb3{background:var(--purple-bg);color:var(--purple)}
+  .mini-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+  .mini-tags .mt{font-size:11.5px;padding:3px 9px;border-radius:6px;font-family:var(--mono);font-weight:600}
+  .mt-blue{background:var(--blue-bg);color:var(--blue)} .mt-orange{background:var(--orange-bg);color:var(--orange)} .mt-purple{background:var(--purple-bg);color:var(--purple)}
+  .mini-scenes{display:grid;gap:5px}
+  .ms{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;padding:5px 10px;border-radius:7px;background:#f4f6fa;border:1px solid var(--line)}
+  .ms b{font-weight:600}
+  .ms span{color:var(--faint);font-size:11.5px}
+  .rule-anat{border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:12.5px}
+  .rule-anat .ra-head{background:var(--ink);color:#fff;padding:8px 14px;font-family:var(--mono);font-size:12px}
+  .rule-anat .ra-row{display:flex;gap:10px;padding:8px 14px;border-top:1px solid var(--line);align-items:baseline}
+  .rule-anat .ra-row:first-of-type{border-top:none}
+  .ra-key{flex:none;font-family:var(--mono);font-weight:700;font-size:11.5px;width:96px}
+  .rk-f{color:var(--green)} .rk-b{color:var(--red)} .rk-j{color:var(--blue)} .rk-o{color:var(--amber)}
+  .ra-val{color:var(--sub)}
+  .flowline{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px dashed var(--line)}
+  .fl-step{font-size:12px;background:#f4f6fa;border:1px solid var(--line);border-radius:8px;padding:5px 12px}
+  .fl-step b{color:var(--ink)}
+  .fl-arrow{color:#b6c0d4;font-size:14px}
+  .fl-out{background:#fdf6ec;border-color:#f1e0bf;color:#92600a}
+
+  /* heatmap */
+  table.heat{border-collapse:separate;border-spacing:4px;width:100%;font-size:12px}
+  .heat th{font-weight:600;color:var(--sub);padding:4px 2px;text-align:center;font-size:11px}
+  .heat th.rowh{text-align:left;padding-left:6px;white-space:nowrap;font-size:11.5px}
+  .heat td{width:9%;text-align:center;padding:7px 2px;border-radius:6px;background:#eef1f6;color:var(--faint);font-family:var(--mono);font-size:11.5px}
+  .heat td.on{color:#fff;font-weight:700;background:var(--blue)}
+  .heat td.on.deep{background:#1e3a8a}
+  .heat td.mid{background:#60a5fa;color:#0c2a66}
+  .heat td.light{background:#bfdbfe;color:#12356e}
+  .heat td.zero{opacity:.55}
+  .heat tfoot td{background:transparent;color:var(--sub);font-weight:600;border-top:1px solid var(--line);border-radius:0;padding-top:8px}
+  .legend{display:flex;gap:18px;margin-top:14px;font-size:12px;color:var(--sub);flex-wrap:wrap;align-items:center}
+  .lg{display:flex;align-items:center;gap:6px}
+  .sw{width:14px;height:14px;border-radius:4px;display:inline-block}
+
+  /* pipeline */
+  .pipe{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;counter-reset:step}
+  @media(max-width:900px){.pipe{grid-template-columns:1fr 1fr}}
+  .pstep{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;position:relative}
+  .pstep::before{counter-increment:step;content:counter(step);position:absolute;top:-10px;left:14px;width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .pstep h5{font-size:13.5px;margin:6px 0 4px}
+  .pstep p{font-size:12px;color:var(--sub)}
+  .verdict{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+  @media(max-width:760px){.verdict{grid-template-columns:1fr}}
+  .vd{border-radius:10px;padding:14px 18px;font-size:13.5px}
+  .vd b{display:block;margin-bottom:4px;font-size:13px}
+  .vd-pass{background:#effaf3;border:1px solid #c8ecd6;color:#166534}
+  .vd-fail{background:#fdf0f0;border:1px solid #f2d4d4;color:#991b1b}
+
+  /* loop & backtest */
+  .loop{display:grid;grid-template-columns:1fr 60px 1fr;align-items:center;gap:0;margin-bottom:18px}
+  @media(max-width:820px){.loop{grid-template-columns:1fr}}
+  .loopbox{border-radius:12px;padding:18px 20px;border:1px solid var(--line)}
+  .loopbox h4{font-size:14px;margin-bottom:6px}
+  .loopbox p{font-size:12.5px;color:var(--sub)}
+  .loopbox.done{background:var(--teal-bg);border-color:#c8e9e4}
+  .loopbox.run{background:#fdf6ec;border-color:#f1e0bf}
+  .loopmid{text-align:center;color:#b6c0d4;font-size:22px}
+  .bt-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+  @media(max-width:760px){.bt-stats{grid-template-columns:1fr 1fr}}
+  .bts{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;text-align:center}
+  .bts b{display:block;font-size:24px;font-weight:700}
+  .bts span{font-size:12px;color:var(--sub)}
+  .bts.hit b{color:var(--blue)} .bts.rev b{color:var(--teal)} .bts.blind b{color:var(--orange)} .bts.bound b{color:var(--faint)}
+
+  /* usage */
+  .use{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media(max-width:860px){.use{grid-template-columns:1fr}}
+  .ucard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px}
+  .ucard .ico{font-size:22px;margin-bottom:8px}
+  .ucard h4{font-size:14.5px;margin-bottom:6px}
+  .ucard p{font-size:12.5px;color:var(--sub)}
+
+  /* roadmap */
+  .road{list-style:none}
+  .road li{display:flex;gap:14px;padding:10px 0;border-bottom:1px dashed var(--line);font-size:13.5px;align-items:baseline}
+  .road li:last-child{border-bottom:none}
+  .rs{flex:none;font-size:11.5px;font-weight:700;padding:2px 10px;border-radius:99px;width:78px;text-align:center}
+  .rs-done{background:#e5f6ec;color:#166534} .rs-run{background:#fdf3e2;color:#92600a} .rs-back{background:#eef1f6;color:var(--sub)}
+
+  /* appendix */
+  .aplist{columns:2;column-gap:26px;font-size:12.5px}
+  @media(max-width:760px){.aplist{columns:1}}
+  .apgroup{break-inside:avoid;margin-bottom:14px}
+  .apgroup h5{font-size:12.5px;color:var(--ink);border-bottom:1px solid var(--line);padding-bottom:4px;margin-bottom:6px}
+  .apgroup li{list-style:none;color:var(--sub);padding:2px 0}
+  .apgroup li b{font-family:var(--mono);font-size:11.5px;color:var(--blue);font-weight:600}
+
+  footer{color:var(--faint);font-size:12px;text-align:center;padding-top:8px;border-top:1px solid var(--line)}
+  code{font-family:var(--mono);font-size:.92em;background:#eef1f6;padding:1px 6px;border-radius:5px}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="wrap">
+    <div class="kicker">REQUIREMENT QUALITY · 治理方案 V1.0 · 2026-10-20</div>
+    <h1>需求有效性治理方案</h1>
+    <p class="lead">把"需求写得无效"从玄学变成可扫描、可验证、可治理的工程问题：以 <b>9 类缺陷标签 × 43 个场景 × 44 条可执行规则</b> 构成三层治理框架，每条规则均经多解实现验证实证，真实样本回测持续校准。</p>
+    <div class="stats">
+      <div class="stat"><b>9</b><span>缺陷标签（3 族）</span></div>
+      <div class="stat"><b>43</b><span>场景（9 组，全量覆盖）</span></div>
+      <div class="stat"><b>44</b><span>验证规则（一格一文件）</span></div>
+      <div class="stat"><b>44+13</b><span>合成候选 + 真实回测样本</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- 01 问题定义 -->
+<section>
+  <h2><span class="no">1</span>问题定义：什么叫"无效需求"</h2>
+  <p class="sub">凡是<b>描述与预期产出之间存在信息缺口</b>的需求，都算无效。</p>
+  <div class="card">
+    <p style="font-size:14px">需求文本看似"说清楚了"，实则把关键决策留白。开发只能自行假设，而不同假设会产出<b>用户可感知的互斥差异</b>——系统"能用"，但不是提需求的人想要的那个。验证案例：同一条"删除操作需要二次确认"，三个独立实现给出了完全互斥的五种系统行为（哪些操作要确认、确认后能否撤销、误删能否自救）。</p>
+    <p style="font-size:13px;color:var(--sub);margin-top:10px">治理目标：让缺口在<b>需求阶段</b>被检出，而不是在验收阶段被发现。</p>
+  </div>
+</section>
+
+<!-- 02 治理框架 -->
+<section>
+  <h2><span class="no">2</span>需求有效性治理框架（三层架构）</h2>
+  <p class="sub">缺陷标签回答"<b>缺了什么</b>"，场景骨架回答"<b>在哪儿缺</b>"，两者交叉定位到矩阵格子，规则回答"<b>怎么检出</b>"——三条轴收敛成一条可执行的扫描路径。</p>
+
+  <div class="card">
+    <div class="frame">
+      <!-- L1+L2 -->
+      <div>
+        <div class="fcol" style="margin-bottom:14px">
+          <span class="layer-badge lb1">LAYER 1 · 缺陷标签</span>
+          <h3>9 类缺陷标签 <span style="font-size:12px;color:var(--faint);font-weight:400">—— 缺了什么</span></h3>
+          <div class="fc-q">按缺陷的语言学形态分三族</div>
+          <div class="mini-tags">
+            <span class="mt mt-blue">P1 不完整</span><span class="mt mt-blue">P2 不可验证</span><span class="mt mt-blue">P3 主观模糊</span><span class="mt mt-blue">P4 隐含假设</span>
+            <span class="mt mt-orange">P5 歧义</span><span class="mt mt-orange">P6 不精确动词</span>
+            <span class="mt mt-purple">P7 流程断点</span><span class="mt mt-purple">P8 非原子</span><span class="mt mt-purple">P9 范围失焦</span>
+          </div>
+          <p style="font-size:12px;color:var(--sub)">词类可预判标签：程度/集合/体验形容词→P3 · 愿望陈述→P2 · 开放谱系动词→P9 · 判定负载词/私有共识→P4 · 欠约束公式→P5</p>
+        </div>
+        <div class="fcol">
+          <span class="layer-badge lb2">LAYER 2 · 场景骨架</span>
+          <h3>9 组 43 场景 <span style="font-size:12px;color:var(--faint);font-weight:400">—— 在哪儿缺</span></h3>
+          <div class="fc-q">外部分类学六来源交叉，无新增即穷尽；ID 冻结不回收</div>
+          <div class="mini-scenes">
+            <div class="ms"><b>数据录入</b><span>S01–S06 表单/校验/导入/上传/删除/级联</span></div>
+            <div class="ms"><b>数据消费</b><span>S07–S13 列表/搜索/详情/排序/报表/导出/埋点</span></div>
+            <div class="ms"><b>流程与状态</b><span>S14–S18 审批流/状态机/异常/定时/并发</span></div>
+            <div class="ms"><b>交互反馈</b><span>S19–S22 通知/确认/加载/空态</span></div>
+            <div class="ms"><b>权限与安全</b><span>S23–S28 角色/登录/隔离/审计/加密/合规</span></div>
+            <div class="ms"><b>集成与接口</b><span>S29–S32 API/同步/回调/多端</span></div>
+            <div class="ms"><b>非功能</b><span>S33–S39 性能…部署 7 场景</span></div>
+            <div class="ms"><b>需求管理</b><span>S40–S41 范围/验收</span></div>
+            <div class="ms"><b>业务规则与数据</b><span>S42–S43 计算精度/迁移</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="farrow">→</div>
+      <!-- L3 -->
+      <div class="fcol">
+        <span class="layer-badge lb3">LAYER 3 · 扫描规则</span>
+        <h3>44 条规则 <span style="font-size:12px;color:var(--faint);font-weight:400">—— 怎么检出</span></h3>
+        <div class="fc-q">标签 × 场景 = 矩阵格子，一格一文件；多解实现验证实证</div>
+        <div class="rule-anat">
+          <div class="ra-head">R-S05-P1 删除未定义语义边界</div>
+          <div class="ra-row"><span class="ra-key rk-f">F 正向特征</span><span class="ra-val">须出现：删除操作声明 + 极简表述（附内联示例）</span></div>
+          <div class="ra-row"><span class="ra-key rk-b">B 反向特征</span><span class="ra-val">须不出现：删除语义/失败策略/确认保护（互斥条款含强度分级）</span></div>
+          <div class="ra-row"><span class="ra-key rk-j">布尔判定式</span><span class="ra-val">(F1 ∧ F2) ∧ ¬B1 ∧ ¬B2 ∧ ¬B3 → 命中</span></div>
+          <div class="ra-row"><span class="ra-key rk-o">误报/漏报</span><span class="ra-val">外部引用不误报；弱边界词不漏报（回测增强）</span></div>
+        </div>
+        <div class="flowline">
+          <span class="fl-step"><b>需求文本</b></span><span class="fl-arrow">→</span>
+          <span class="fl-step">场景归位</span><span class="fl-arrow">→</span>
+          <span class="fl-step">F/B 逐特征核对</span><span class="fl-arrow">→</span>
+          <span class="fl-step fl-out"><b>命中报告缺口</b>（只报告，不追问）</span>
+        </div>
+        <p style="font-size:12px;color:var(--sub);margin-top:12px">分界对防重叠：S14↔S16↔S29（流程异常/逆向操作/外部依赖）、S39↔S43（版本兼容/一次性迁移）。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 标签层 -->
+<section>
+  <h2><span class="no">3</span>第一层：缺陷标签体系</h2>
+  <p class="sub">实践六类与学术 smell 目录（Montgomery/Rimay/ISO 29148）交叉收敛为 9 标签；标签只描述缺口类型，不描述严重程度。</p>
+  <div class="fam">
+    <div class="fam-card f-blue">
+      <h4>信息量缺陷族（写了但不够）</h4>
+      <div class="fd">数量最多的一族，占已验证规则的 75%</div>
+      <div class="tag"><b>P1</b><span><em>不完整</em>：关键决策点缺失，开发必须自行假设</span></div>
+      <div class="tag"><b>P2</b><span><em>不可验证</em>：无验收标准，"做到什么程度算完"缺失</span></div>
+      <div class="tag"><b>P3</b><span><em>主观模糊</em>：主观形容词无量化（"要快""简洁易用"）</span></div>
+      <div class="tag"><b>P4</b><span><em>隐含假设</em>：依赖未言明上下文（"和现有系统一致"）</span></div>
+    </div>
+    <div class="fam-card f-orange">
+      <h4>语言缺陷族（写了但会读歪）</h4>
+      <div class="fd">字面无歧义 ≠ 无歧义——欠约束即歧义</div>
+      <div class="tag"><b>P5</b><span><em>歧义表述</em>：一句多种解读；舍入/路径未定的公式即是</span></div>
+      <div class="tag"><b>P6</b><span><em>不精确动词</em>：动作无精确定义（"处理""支持"）<i style="color:var(--faint)">待回测驱动</i></span></div>
+    </div>
+    <div class="fam-card f-purple">
+      <h4>结构缺陷族（该有的段落没有）</h4>
+      <div class="fd">需求作为"文档"的结构性缺失</div>
+      <div class="tag"><b>P7</b><span><em>流程断点</em>：只写正常路径，失败/回退/撤销缺失</span></div>
+      <div class="tag"><b>P8</b><span><em>非原子</em>：一条需求塞多个动作<i style="color:var(--faint)">（合成验证中被"组件复用趋同"推翻过一次，待真实样本再驱动）</i></span></div>
+      <div class="tag"><b>P9</b><span><em>范围失焦</em>：核心名词未圈定（"通知用户""支持双端"）</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 矩阵 -->
+<section>
+  <h2><span class="no">4</span>治理矩阵：场景组 × 标签覆盖热图</h2>
+  <p class="sub">44 条规则在 9 组 × 9 标签矩阵上的分布（387 格中的 44 格已点亮）。空格即盲区——但盲区 ≠ 必须填充：P6/P8 两列暂无实证支撑，等待真实样本驱动，避免为凑格而造规则。</p>
+  <div class="card">
+    <table class="heat">
+      <thead><tr>
+        <th class="rowh" style="width:13%">场景组 \ 标签</th>
+        <th style="color:var(--blue)">P1</th><th style="color:var(--blue)">P2</th><th style="color:var(--blue)">P3</th><th style="color:var(--blue)">P4</th>
+        <th style="color:var(--orange)">P5</th><th style="color:var(--orange)">P6</th>
+        <th style="color:var(--purple)">P7</th><th style="color:var(--purple)">P8</th><th style="color:var(--purple)">P9</th>
+      </tr></thead>
+      <tbody>
+        <tr><th class="rowh">数据录入</th><td class="on deep">6</td><td class="zero">·</td><td class="zero">·</td><td class="on light">1</td><td class="zero">·</td><td class="zero">·</td><td class="zero">·</td><td class="zero">·</td><td class="zero">·</td></tr>
+        <tr><th class="rowh">数据消费</th><td class="on deep">5</td><td class="on light">1</td><td class="on light">1</td><td class="zero">·</td><td class="zero">·</td><td class="zero">·</td><td class="zero">·</td><td class="zero">·</td><td class="zero">·</td></tr>
+        <tr><th class="rowh">流程与状态</th><td class="on">3</td><td class="zero">·</td><td class="zero">·</td><td class="zero">·</td><td class="zero">·</td><td class="zero">·</td><td class="on light">2</td><td class="zero">·</td><td class="zero">·</td></tr>
+        <tr><th class="rowh">交互反馈</th><td class="on">2</td><td class="zero">·</td><td class="on light">1</td><td class="zero">·</td><td class="zero">·</td><td class="zero">·</td><td class="zero">·</td><td class="zero">·</td><td class="on light">1</td></tr>
+        <tr><th class="rowh">权限与安全</th><td class="on">3</td><td class="zero">·</td><td class="zero">·</td><td class="on light">2</td><td class="zero">·</td><td class="zero">·</td><td class="zero">·</td><td class="zero">·</td><td class="on light">1</td></tr>
+        <tr><th class="rowh">集成与接口</th><td class="on light">1</td><td class="zero">·</td><td class="zero">·</td><td class="on light">1</td><td class="zero">·</td><td class="zero">·</td><td class="on light">1</td><td class="zero">·</td><td class="on light">1</td></tr>
+        <tr><th class="rowh">非功能</th><td class="on light">1</td><td class="on light">1</td><td class="on mid">3</td><td class="on light">1</td><td class="zero">·</td><td class="zero">·</td><td class="zero">·</td><td class="zero">·</td><td class="on light">1</td></tr>
+        <tr><th class="rowh">需求管理</th><td class="zero">·</td><td class="on light">1</td><td class="zero">·</td><td class="zero">·</td><td class="zero">·</td><td class="zero">·</td><td class="zero">·</td><td class="zero">·</td><td class="on light">1</td></tr>
+        <tr><th class="rowh">业务规则与数据</th><td class="on light">1</td><td class="zero">·</td><td class="zero">·</td><td class="zero">·</td><td class="on light">1</td><td class="zero">·</td><td class="zero">·</td><td class="zero">·</td><td class="zero">·</td></tr>
+      </tbody>
+      <tfoot><tr>
+        <th class="rowh" style="font-size:11px">列合计（44）</th>
+        <td>22</td><td>3</td><td>5</td><td>5</td><td>1</td><td style="color:#c5cbd8">0</td><td>3</td><td style="color:#c5cbd8">0</td><td>5</td>
+      </tr></tfoot>
+    </table>
+    <div class="legend">
+      <span class="lg"><span class="sw" style="background:#1e3a8a"></span>5–6 条</span>
+      <span class="lg"><span class="sw" style="background:#2563eb"></span>3–4 条</span>
+      <span class="lg"><span class="sw" style="background:#60a5fa"></span>2–3 条</span>
+      <span class="lg"><span class="sw" style="background:#bfdbfe"></span>1 条</span>
+      <span class="lg"><span class="sw" style="background:#eef1f6;border:1px solid #dde3ec"></span>未覆盖（387 格中余 343）</span>
+    </div>
+  </div>
+</section>
+
+<!-- 05 方法论 -->
+<section>
+  <h2><span class="no">5</span>方法论：多解实现验证法</h2>
+  <p class="sub">规则不是拍脑袋写的——每条规则入库前必须通过实证质检：缺口是否真实存在，由独立实现者的分歧说了算。</p>
+  <div class="card">
+    <div class="pipe">
+      <div class="pstep"><h5>构造候选</h5><p>按场景构造含预埋缺口的需求候选（44 个 CAND）</p></div>
+      <div class="pstep"><h5>独立实现</h5><p>3 个背景互补人设（企业派/SaaS 派/极简派）各自输出实现假设清单</p></div>
+      <div class="pstep"><h5>交叉比对</h5><p>提取冲突性假设：互斥且用户可感知的选择差异</p></div>
+      <div class="pstep"><h5>剔除伪缺陷</h5><p>实现自由度差异（UI 样式、库选型、趋同默认值）不算缺口</p></div>
+      <div class="pstep"><h5>沉淀规则</h5><p>≥2 组冲突 = 实证成立 → 写入规则文件 + 更新矩阵</p></div>
+    </div>
+    <div class="verdict">
+      <div class="vd vd-pass"><b>✓ 实证示例 · R-S14-P7 审批流只定义正向路径</b>正向路径三人趋同（提交→审批→通过），但"驳回后重提"三人给出重新发起 / 可配置续审 / 无所谓三种互斥选择，"超时"三人给出提醒+转交 / 可配置 / 仅提醒——5 组冲突，缺口成立。</div>
+      <div class="vd vd-fail"><b>✗ 伪缺陷示例 · P8 非原子被推翻</b>CAND-001"添加和编辑收货地址"预埋了 P8（一条需求两个动作），但三位实现者均复用同一表单组件，产出趋同——标签被验证推翻，只记 P1。规则库不留未经实证的格子。</div>
+    </div>
+  </div>
+</section>
+
+<!-- 06 双层闭环 -->
+<section>
+  <h2><span class="no">6</span>双层闭环：合成铺骨架，真实做校准</h2>
+  <p class="sub">合成层解决冷启动（没有真实样本也能穷举），真实层校准分布（真实语料检验结构与命中率）——两层互哺但物理分离：仓库里只有规则，真实需求只留在回测记录。</p>
+  <div class="card">
+    <div class="loop">
+      <div class="loopbox done">
+        <h4>🧪 合成层（已完成）</h4>
+        <p>AI 构造候选 + 多解实现验证，10 轮铺满 43 场景骨架，44 条规则全部实证。结构性沉淀：词类→标签映射、根因场景（S40 是 P9 源头 / S41 是 P2 根因）、资损高危场景（S29/S31/S42）。</p>
+      </div>
+      <div class="loopmid">⇄</div>
+      <div class="loopbox run">
+        <h4>🌍 真实层（进行中）</h4>
+        <p>采集开源 issue / 外包平台 / 社区的真实需求（REAL-xxx，带来源 URL），逐条套规则回测。命中 → 覆盖度 +1；信息完整反例 → 特异性证据；<b>盲区 → 修订规则</b>；新缺陷形态 → 修订骨架（升版）。</p>
+      </div>
+    </div>
+    <div class="bt-stats">
+      <div class="bts hit"><b>8</b><span>命中（缺口被规则检出）</span></div>
+      <div class="bts rev"><b>4</b><span>信息完整反例（正确不报警）</span></div>
+      <div class="bts blind"><b>2</b><span>盲区 → 当日增强规则</span></div>
+      <div class="bts bound"><b>3</b><span>语言/语体边界记录</span></div>
+    </div>
+    <p style="font-size:13px;color:var(--sub)">首轮回测关键结论（13 样本 14 判定单元）：<b>骨架 43 场景 × 9 标签经受住真实语料检验，无一例需要修订</b>；盲区全部落在规则特征工程层（词表收窄、互斥条款粒度），当日完成两条规则增强——R-S05 扩展至单条删除形态、R-S16 互斥加强度分级。回测→增强的闭环首次实战运转成功。</p>
+  </div>
+</section>
+
+<!-- 07 应用 -->
+<section>
+  <h2><span class="no">7</span>治理框架的三种消费方式</h2>
+  <p class="sub">规则库（场景/ 目录）是唯一消费源：内容无关、自包含、可被 AI 直接加载。</p>
+  <div class="use">
+    <div class="ucard"><div class="ico">🤖</div><h4>AI 需求扫描 skill / clarifier</h4><p>加载 44 条规则扫描任意需求文本：场景归位 → F/B 逐特征核对 → 命中即报告信息缺口。只报告不追问，适配自动化流水线（需求提交即扫描）。</p></div>
+    <div class="ucard"><div class="ico">✍️</div><h4>写需求时对照自查</h4><p>按场景组索引规则：写删除类需求对照 R-S05（语义/失败/确认三要素），写集成类对照 R-S29（中断/补偿/逆向三路径）。命中条件的反向特征清单 = 自查清单。</p></div>
+    <div class="ucard"><div class="ico">👥</div><h4>团队评审基线</h4><p>需求评审会用矩阵做结构化检查：该需求落在哪些格子？已覆盖格子的规则是否全过？未覆盖格子人工补查。把评审从经验驱动升级为清单驱动。</p></div>
+  </div>
+</section>
+
+<!-- 08 路线 -->
+<section>
+  <h2><span class="no">8</span>当前状态与路线</h2>
+  <div class="card">
+    <ul class="road">
+      <li><span class="rs rs-done">已完成</span>合成层 43 场景全量覆盖（44 规则 / 10 轮多解验证 / 9 个测评集档案）</li>
+      <li><span class="rs rs-done">已完成</span>真实样本回测首轮（13 样本：命中 8 / 反例 4 / 盲区 2 当日增强 / 边界 3）</li>
+      <li><span class="rs rs-done">已完成</span>README 与知识库文档重写（三层治理体系表述）</li>
+      <li><span class="rs rs-run">进行中</span>真实样本累积至 50+，评估缺陷分布与命中率稳定性</li>
+      <li><span class="rs rs-run">进行中</span>P6（不精确动词）/ P8（非原子）两列等待回测或定向验证驱动</li>
+      <li><span class="rs rs-back">待启动</span>扫描 skill 封装：规则库 → 可安装的 AI 扫描技能</li>
+      <li><span class="rs rs-back">低优先</span>英文等价词表（除非语料扩展到英文需求）</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 09 附录 -->
+<section>
+  <h2><span class="no">9</span>附录：44 条规则清单</span></h2>
+  <p class="sub">文件名 = 规则 ID = 矩阵坐标，存放于 <code>场景/&lt;场景组&gt;/</code>。</p>
+  <div class="card">
+    <div class="aplist">
+      <div class="apgroup"><h5>数据录入（7）</h5><ul>
+        <li><b>R-S01-P1</b> 表单字段规则缺失</li><li><b>R-S01-P4</b> "与现有系统一致"隐藏假设</li>
+        <li><b>R-S02-P1</b> 校验只点名对象未定义规则</li><li><b>R-S03-P1</b> 导入未定义模板重复与失败边界</li>
+        <li><b>R-S04-P1</b> 上传未定义格式大小与生效链路</li><li><b>R-S05-P1</b> 删除未定义语义边界与恢复（含单条形态）</li>
+        <li><b>R-S06-P1</b> 引用数据删除未定义级联行为</li></ul></div>
+      <div class="apgroup"><h5>数据消费（7）</h5><ul>
+        <li><b>R-S07-P1</b> 列表要素缺失</li><li><b>R-S08-P1</b> 搜索范围与方式缺失</li>
+        <li><b>R-S09-P1</b> 详情页展示内容与定位缺失</li><li><b>R-S10-P3</b> 排序分页主诉词无量化</li>
+        <li><b>R-S11-P2</b> 报表指标口径未定义</li><li><b>R-S12-P1</b> 导出范围列集与量级缺失</li>
+        <li><b>R-S13-P1</b> 埋点事件模型缺失</li></ul></div>
+      <div class="apgroup"><h5>流程与状态（5）</h5><ul>
+        <li><b>R-S14-P7</b> 审批流只定义正向路径</li><li><b>R-S15-P1</b> 状态机只列状态名</li>
+        <li><b>R-S16-P7</b> 撤销只定义成功路径（互斥含强度分级）</li><li><b>R-S17-P1</b> 定时规则未定义起算与边界</li>
+        <li><b>R-S18-P1</b> 防重未定义口径与拦截层级</li></ul></div>
+      <div class="apgroup"><h5>交互反馈（4）</h5><ul>
+        <li><b>R-S19-P9</b> 通知核心名词未圈定</li><li><b>R-S20-P1</b> 二次确认未定义范围与语义</li>
+        <li><b>R-S21-P3</b> 加载状态无形态不可验收</li><li><b>R-S22-P1</b> 空态未定义要素与空语义区分</li></ul></div>
+      <div class="apgroup"><h5>权限与安全（6）</h5><ul>
+        <li><b>R-S23-P9</b> 权限管理未圈定对象与粒度</li><li><b>R-S24-P1</b> 验证码登录缺账号体系边界</li>
+        <li><b>R-S25-P1</b> 数据隔离缺归属模型与作用面</li><li><b>R-S26-P1</b> 操作日志缺范围与内容要素</li>
+        <li><b>R-S27-P4</b> "敏感数据"判定负载词</li><li><b>R-S28-P4</b> 合规隐含法域义务假设</li></ul></div>
+      <div class="apgroup"><h5>集成与接口（4）</h5><ul>
+        <li><b>R-S29-P7</b> 支付集成只定义发起路径</li><li><b>R-S30-P4</b> 对接隐含契约六要素</li>
+        <li><b>R-S31-P1</b> 回调缺投递语义与安全契约</li><li><b>R-S32-P9</b> 多端"支持"程度失焦</li></ul></div>
+      <div class="apgroup"><h5>非功能（7）</h5><ul>
+        <li><b>R-S33-P3</b> 性能需求主观无量化</li><li><b>R-S34-P3</b> "主流"等集合形容词无清单</li>
+        <li><b>R-S35-P3</b> "简洁易用"无操作化定义</li><li><b>R-S36-P2</b> 可靠性无量化口径与故障边界</li>
+        <li><b>R-S37-P9</b> 国际化未界定范围与目标</li><li><b>R-S38-P1</b> 可配置缺主体/范围/生效</li>
+        <li><b>R-S39-P4</b> 版本兼容隐含跨度假设</li></ul></div>
+      <div class="apgroup"><h5>需求管理（2）</h5><ul>
+        <li><b>R-S40-P9</b> 范围声明用"核心/后续"替代清单</li><li><b>R-S41-P2</b> 验收标准用"正常/可用"替代完成定义</li></ul></div>
+      <div class="apgroup"><h5>业务规则与数据（2）</h5><ul>
+        <li><b>R-S42-P5</b> 计算规则未定舍入与运算路径</li><li><b>R-S43-P1</b> 迁移未定义范围与凭证处置</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  requirement-quality · 需求有效性治理方案 V1.0 · 数据截至 2026-10-20 · 生成自仓库全量内容（知识库 / 场景 / 测评集 / 覆盖矩阵）
+</footer>
+
+</div>
+</body>
+</html>
