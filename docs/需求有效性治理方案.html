@@ -55,14 +55,36 @@
   .tag span{color:var(--sub)}
   .tag span em{font-style:normal;color:var(--ink)}
 
-  /* framework diagram */
-  .frame{display:grid;grid-template-columns:1fr 96px 1fr;gap:0;align-items:stretch}
-  @media(max-width:900px){.frame{grid-template-columns:1fr}}
+  /* framework diagram (vertical: tags -> scenes -> rules) */
+  .frame-v{display:flex;flex-direction:column}
   .fcol{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
   .fcol h3{font-size:15px;margin-bottom:2px}
   .fcol .fc-q{font-size:12px;color:var(--faint);margin-bottom:14px;letter-spacing:.08em}
-  .farrow{display:flex;align-items:center;justify-content:center;color:#b6c0d4;font-size:26px}
-  @media(max-width:900px){.farrow{transform:rotate(90deg);height:44px}}
+  .h3note{font-size:12px;color:var(--faint);font-weight:400}
+  .fam-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px}
+  @media(max-width:860px){.fam-row{grid-template-columns:1fr}}
+  .fam-col{border-radius:10px;padding:12px 14px;border:1px solid var(--line)}
+  .fc-blue{background:var(--blue-bg);border-color:#cfe0fc}
+  .fc-orange{background:var(--orange-bg);border-color:#f6dcc6}
+  .fc-purple{background:var(--purple-bg);border-color:#e4d8fb}
+  .fam-name{font-size:12px;font-weight:600;margin-bottom:8px}
+  .fc-blue .fam-name{color:var(--blue)} .fc-orange .fam-name{color:var(--orange)} .fc-purple .fam-name{color:var(--purple)}
+  .chip-row{display:flex;flex-wrap:wrap;gap:6px}
+  .chip-row .mt{font-size:11.5px;padding:3px 9px;border-radius:6px;font-family:var(--mono);font-weight:600}
+  .fnote{font-size:12px;color:var(--sub)}
+  .varrow{display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 0}
+  .varrow .va{color:#94a3c4;font-size:20px;line-height:1}
+  .varrow .vl{font-size:12px;color:var(--faint);letter-spacing:.04em}
+  .scene-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  @media(max-width:860px){.scene-grid{grid-template-columns:1fr}}
+  .scene-grid .ms{flex-wrap:wrap;gap:2px 8px}
+  .l3-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;align-items:start}
+  @media(max-width:860px){.l3-grid{grid-template-columns:1fr}}
+  .vpipe{display:flex;flex-direction:column}
+  .vp-step{font-size:12.5px;background:#f4f6fa;border:1px solid var(--line);border-radius:8px;padding:6px 12px;text-align:center}
+  .vp-step b{color:var(--ink)}
+  .vp-out{background:#fdf6ec;border-color:#f1e0bf;color:#92600a}
+  .vp-arrow{text-align:center;color:#b6c0d4;font-size:13px;line-height:1.6}
   .layer-badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 10px;border-radius:99px;margin-bottom:10px;letter-spacing:.05em}
   .lb1{background:var(--blue-bg);color:var(--blue)} .lb2{background:var(--teal-bg);color:var(--teal)} .lb3{background:var(--purple-bg);color:var(--purple)}
   .mini-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
@@ -191,57 +213,72 @@
   <p class="sub">缺陷标签回答"<b>缺了什么</b>"，场景骨架回答"<b>在哪儿缺</b>"，两者交叉定位到矩阵格子，规则回答"<b>怎么检出</b>"——三条轴收敛成一条可执行的扫描路径。</p>
 
   <div class="card">
-    <div class="frame">
-      <!-- L1+L2 -->
-      <div>
-        <div class="fcol" style="margin-bottom:14px">
-          <span class="layer-badge lb1">LAYER 1 · 缺陷标签</span>
-          <h3>9 类缺陷标签 <span style="font-size:12px;color:var(--faint);font-weight:400">—— 缺了什么</span></h3>
-          <div class="fc-q">按缺陷的语言学形态分三族</div>
-          <div class="mini-tags">
-            <span class="mt mt-blue">P1 不完整</span><span class="mt mt-blue">P2 不可验证</span><span class="mt mt-blue">P3 主观模糊</span><span class="mt mt-blue">P4 隐含假设</span>
-            <span class="mt mt-orange">P5 歧义</span><span class="mt mt-orange">P6 不精确动词</span>
-            <span class="mt mt-purple">P7 流程断点</span><span class="mt mt-purple">P8 非原子</span><span class="mt mt-purple">P9 范围失焦</span>
+    <div class="frame-v">
+      <!-- L1 -->
+      <div class="fcol">
+        <span class="layer-badge lb1">LAYER 1 · 缺陷标签 —— 缺了什么</span>
+        <h3>9 类缺陷标签 <span class="h3note">按缺陷的语言学形态分三族</span></h3>
+        <div class="fam-row" style="margin-top:12px">
+          <div class="fam-col fc-blue">
+            <div class="fam-name">信息量缺陷（写了但不够）</div>
+            <div class="chip-row"><span class="mt mt-blue">P1 不完整</span><span class="mt mt-blue">P2 不可验证</span><span class="mt mt-blue">P3 主观模糊</span><span class="mt mt-blue">P4 隐含假设</span></div>
           </div>
-          <p style="font-size:12px;color:var(--sub)">词类可预判标签：程度/集合/体验形容词→P3 · 愿望陈述→P2 · 开放谱系动词→P9 · 判定负载词/私有共识→P4 · 欠约束公式→P5</p>
+          <div class="fam-col fc-orange">
+            <div class="fam-name">语言缺陷（写了但会读歪）</div>
+            <div class="chip-row"><span class="mt mt-orange">P5 歧义</span><span class="mt mt-orange">P6 不精确动词</span></div>
+          </div>
+          <div class="fam-col fc-purple">
+            <div class="fam-name">结构缺陷（该有的没有）</div>
+            <div class="chip-row"><span class="mt mt-purple">P7 流程断点</span><span class="mt mt-purple">P8 非原子</span><span class="mt mt-purple">P9 范围失焦</span></div>
+          </div>
         </div>
-        <div class="fcol">
-          <span class="layer-badge lb2">LAYER 2 · 场景骨架</span>
-          <h3>9 组 43 场景 <span style="font-size:12px;color:var(--faint);font-weight:400">—— 在哪儿缺</span></h3>
-          <div class="fc-q">外部分类学六来源交叉，无新增即穷尽；ID 冻结不回收</div>
-          <div class="mini-scenes">
-            <div class="ms"><b>数据录入</b><span>S01–S06 表单/校验/导入/上传/删除/级联</span></div>
-            <div class="ms"><b>数据消费</b><span>S07–S13 列表/搜索/详情/排序/报表/导出/埋点</span></div>
-            <div class="ms"><b>流程与状态</b><span>S14–S18 审批流/状态机/异常/定时/并发</span></div>
-            <div class="ms"><b>交互反馈</b><span>S19–S22 通知/确认/加载/空态</span></div>
-            <div class="ms"><b>权限与安全</b><span>S23–S28 角色/登录/隔离/审计/加密/合规</span></div>
-            <div class="ms"><b>集成与接口</b><span>S29–S32 API/同步/回调/多端</span></div>
-            <div class="ms"><b>非功能</b><span>S33–S39 性能…部署 7 场景</span></div>
-            <div class="ms"><b>需求管理</b><span>S40–S41 范围/验收</span></div>
-            <div class="ms"><b>业务规则与数据</b><span>S42–S43 计算精度/迁移</span></div>
-          </div>
+        <p class="fnote">词类可预判标签：程度/集合/体验形容词→P3 · 愿望陈述→P2 · 开放谱系动词→P9 · 判定负载词/私有共识→P4 · 欠约束公式→P5</p>
+      </div>
+
+      <div class="varrow"><span class="va">↓</span><span class="vl">标签 × 场景 交叉定位矩阵格子</span><span class="va">↓</span></div>
+
+      <!-- L2 -->
+      <div class="fcol">
+        <span class="layer-badge lb2">LAYER 2 · 场景骨架 —— 在哪儿缺</span>
+        <h3>9 组 43 场景 <span class="h3note">外部分类学六来源交叉，无新增即穷尽；ID 冻结不回收</span></h3>
+        <div class="scene-grid" style="margin-top:12px">
+          <div class="ms"><b>数据录入</b><span>S01–S06 表单/校验/导入/上传/删除/级联</span></div>
+          <div class="ms"><b>数据消费</b><span>S07–S13 列表/搜索/详情/排序/报表/导出/埋点</span></div>
+          <div class="ms"><b>流程与状态</b><span>S14–S18 审批流/状态机/异常/定时/并发</span></div>
+          <div class="ms"><b>交互反馈</b><span>S19–S22 通知/确认/加载/空态</span></div>
+          <div class="ms"><b>权限与安全</b><span>S23–S28 角色/登录/隔离/审计/加密/合规</span></div>
+          <div class="ms"><b>集成与接口</b><span>S29–S32 API/同步/回调/多端</span></div>
+          <div class="ms"><b>非功能</b><span>S33–S39 性能…部署 7 场景</span></div>
+          <div class="ms"><b>需求管理</b><span>S40–S41 范围/验收</span></div>
+          <div class="ms"><b>业务规则与数据</b><span>S42–S43 计算精度/迁移</span></div>
         </div>
       </div>
-      <div class="farrow">→</div>
+
+      <div class="varrow"><span class="va">↓</span><span class="vl">矩阵格子 = 规则坐标（R-&lt;场景&gt;-&lt;标签&gt;，一格一文件）</span><span class="va">↓</span></div>
+
       <!-- L3 -->
       <div class="fcol">
-        <span class="layer-badge lb3">LAYER 3 · 扫描规则</span>
-        <h3>44 条规则 <span style="font-size:12px;color:var(--faint);font-weight:400">—— 怎么检出</span></h3>
-        <div class="fc-q">标签 × 场景 = 矩阵格子，一格一文件；多解实现验证实证</div>
-        <div class="rule-anat">
-          <div class="ra-head">R-S05-P1 删除未定义语义边界</div>
-          <div class="ra-row"><span class="ra-key rk-f">F 正向特征</span><span class="ra-val">须出现：删除操作声明 + 极简表述（附内联示例）</span></div>
-          <div class="ra-row"><span class="ra-key rk-b">B 反向特征</span><span class="ra-val">须不出现：删除语义/失败策略/确认保护（互斥条款含强度分级）</span></div>
-          <div class="ra-row"><span class="ra-key rk-j">布尔判定式</span><span class="ra-val">(F1 ∧ F2) ∧ ¬B1 ∧ ¬B2 ∧ ¬B3 → 命中</span></div>
-          <div class="ra-row"><span class="ra-key rk-o">误报/漏报</span><span class="ra-val">外部引用不误报；弱边界词不漏报（回测增强）</span></div>
+        <span class="layer-badge lb3">LAYER 3 · 扫描规则 —— 怎么检出</span>
+        <h3>44 条规则 <span class="h3note">多解实现验证实证；命中即报告缺口，只报告不追问</span></h3>
+        <div class="l3-grid" style="margin-top:12px">
+          <div class="rule-anat">
+            <div class="ra-head">R-S05-P1 删除未定义语义边界</div>
+            <div class="ra-row"><span class="ra-key rk-f">F 正向特征</span><span class="ra-val">须出现：删除操作声明 + 极简表述（附内联示例）</span></div>
+            <div class="ra-row"><span class="ra-key rk-b">B 反向特征</span><span class="ra-val">须不出现：删除语义/失败策略/确认保护（互斥条款含强度分级）</span></div>
+            <div class="ra-row"><span class="ra-key rk-j">布尔判定式</span><span class="ra-val">(F1 ∧ F2) ∧ ¬B1 ∧ ¬B2 ∧ ¬B3 → 命中</span></div>
+            <div class="ra-row"><span class="ra-key rk-o">误报/漏报</span><span class="ra-val">外部引用不误报；弱边界词不漏报（回测增强）</span></div>
+          </div>
+          <div class="vpipe">
+            <div class="vp-step"><b>需求文本</b></div>
+            <div class="vp-arrow">↓</div>
+            <div class="vp-step">场景归位</div>
+            <div class="vp-arrow">↓</div>
+            <div class="vp-step">F/B 逐特征核对</div>
+            <div class="vp-arrow">↓</div>
+            <div class="vp-step vp-out"><b>命中 → 报告缺口</b></div>
+            <p class="fnote" style="margin-top:12px">分界对防重叠：S14↔S16↔S29（流程异常/逆向操作/外部依赖）、S39↔S43（版本兼容/一次性迁移）。</p>
+          </div>
         </div>
-        <div class="flowline">
-          <span class="fl-step"><b>需求文本</b></span><span class="fl-arrow">→</span>
-          <span class="fl-step">场景归位</span><span class="fl-arrow">→</span>
-          <span class="fl-step">F/B 逐特征核对</span><span class="fl-arrow">→</span>
-          <span class="fl-step fl-out"><b>命中报告缺口</b>（只报告，不追问）</span>
-        </div>
-        <p style="font-size:12px;color:var(--sub);margin-top:12px">分界对防重叠：S14↔S16↔S29（流程异常/逆向操作/外部依赖）、S39↔S43（版本兼容/一次性迁移）。</p>
       </div>
     </div>
   </div>
