@@ -185,9 +185,9 @@
   <div class="wrap">
     <div class="kicker">REQUIREMENT QUALITY · 治理方案 V1.0 · 2026-10-20</div>
     <h1>需求有效性治理方案</h1>
-    <p class="lead">把"需求写得无效"从玄学变成可扫描、可验证、可治理的工程问题：以 <b>9 类缺陷标签 × 43 个场景 × 44 条可执行规则</b> 构成三层治理框架，每条规则均经多解实现验证实证，真实样本回测持续校准。</p>
+    <p class="lead">把"需求写得无效"从玄学变成可扫描、可验证、可治理的工程问题：以 <b>9 类无效需求标签 × 43 个场景 × 44 条可执行规则</b> 构成三层治理框架，每条规则均经多解实现验证实证，真实样本回测持续校准。</p>
     <div class="stats">
-      <div class="stat"><b>9</b><span>缺陷标签（3 族）</span></div>
+      <div class="stat"><b>9</b><span>无效需求标签（3 族）</span></div>
       <div class="stat"><b>43</b><span>场景（9 组，全量覆盖）</span></div>
       <div class="stat"><b>44</b><span>验证规则（一格一文件）</span></div>
       <div class="stat"><b>44+13</b><span>合成候选 + 真实回测样本</span></div>
@@ -210,14 +210,14 @@
 <!-- 02 治理框架 -->
 <section>
   <h2><span class="no">2</span>需求有效性治理框架（三层架构）</h2>
-  <p class="sub">缺陷标签回答"<b>缺了什么</b>"，场景骨架回答"<b>在哪儿缺</b>"，两者交叉定位到矩阵格子，规则回答"<b>怎么检出</b>"——三条轴收敛成一条可执行的扫描路径。</p>
+  <p class="sub">无效需求标签回答"<b>什么是无效</b>"，场景回答"<b>哪些场景无效</b>"，两者交叉定位到矩阵格子，规则回答"<b>怎么检出</b>"——三条轴收敛成一条可执行的扫描路径。</p>
 
   <div class="card">
     <div class="frame-v">
       <!-- L1 -->
       <div class="fcol">
-        <span class="layer-badge lb1">LAYER 1 · 缺陷标签 —— 缺了什么</span>
-        <h3>9 类缺陷标签 <span class="h3note">按缺陷的语言学形态分三族</span></h3>
+        <span class="layer-badge lb1">LAYER 1 · 无效需求标签 —— 什么是无效</span>
+        <h3>9 类无效需求标签 <span class="h3note">按无效形态的语言学分类分三族</span></h3>
         <div class="fam-row" style="margin-top:12px">
           <div class="fam-col fc-blue">
             <div class="fam-name">信息量缺陷（写了但不够）</div>
@@ -239,18 +239,18 @@
 
       <!-- L2 -->
       <div class="fcol">
-        <span class="layer-badge lb2">LAYER 2 · 场景骨架 —— 在哪儿缺</span>
+        <span class="layer-badge lb2">LAYER 2 · 场景 —— 哪些场景无效</span>
         <h3>9 组 43 场景 <span class="h3note">外部分类学六来源交叉，无新增即穷尽；ID 冻结不回收</span></h3>
         <div class="scene-grid" style="margin-top:12px">
-          <div class="ms"><b>数据录入</b><span>S01–S06 表单/校验/导入/上传/删除/级联</span></div>
-          <div class="ms"><b>数据消费</b><span>S07–S13 列表/搜索/详情/排序/报表/导出/埋点</span></div>
-          <div class="ms"><b>流程与状态</b><span>S14–S18 审批流/状态机/异常/定时/并发</span></div>
-          <div class="ms"><b>交互反馈</b><span>S19–S22 通知/确认/加载/空态</span></div>
-          <div class="ms"><b>权限与安全</b><span>S23–S28 角色/登录/隔离/审计/加密/合规</span></div>
-          <div class="ms"><b>集成与接口</b><span>S29–S32 API/同步/回调/多端</span></div>
-          <div class="ms"><b>非功能</b><span>S33–S39 性能…部署 7 场景</span></div>
-          <div class="ms"><b>需求管理</b><span>S40–S41 范围/验收</span></div>
-          <div class="ms"><b>业务规则与数据</b><span>S42–S43 计算精度/迁移</span></div>
+          <div class="ms"><b>数据录入</b><span>表单/字段校验/批量导入/文件上传/删除批量操作/引用级联</span></div>
+          <div class="ms"><b>数据消费</b><span>列表表格/搜索筛选/详情页/排序分页/报表统计/导出/数据埋点</span></div>
+          <div class="ms"><b>流程与状态</b><span>业务流程审批流/状态机/异常回退撤销/定时触发任务/并发幂等</span></div>
+          <div class="ms"><b>交互反馈</b><span>提示通知/确认二次确认/加载进度/空态首次使用</span></div>
+          <div class="ms"><b>权限与安全</b><span>角色权限/登录认证/数据权限隔离/审计日志/数据安全防护/隐私合规</span></div>
+          <div class="ms"><b>集成与接口</b><span>第三方 API 集成/数据同步接口约定/消息推送回调/多端适配</span></div>
+          <div class="ms"><b>非功能</b><span>性能容量/兼容环境/易用性/可靠恢复/国际化时区/可配置扩展/部署版本</span></div>
+          <div class="ms"><b>需求管理</b><span>范围优先级/验收标准</span></div>
+          <div class="ms"><b>业务规则与数据</b><span>计算精度/数据初始化迁移</span></div>
         </div>
       </div>
 
@@ -286,8 +286,8 @@
 
 <!-- 03 标签层 -->
 <section>
-  <h2><span class="no">3</span>第一层：缺陷标签体系</h2>
-  <p class="sub">实践六类与学术 smell 目录（Montgomery/Rimay/ISO 29148）交叉收敛为 9 标签；标签只描述缺口类型，不描述严重程度。</p>
+  <h2><span class="no">3</span>第一层：无效需求标签体系</h2>
+  <p class="sub">实践六类与学术 smell 目录（Montgomery/Rimay/ISO 29148）交叉收敛为 9 标签；标签只描述无效形态，不描述严重程度。</p>
   <div class="fam">
     <div class="fam-card f-blue">
       <h4>信息量缺陷族（写了但不够）</h4>
