@@ -1,0 +1,97 @@
+schema_version: "1.0"
+knowledge_space: requirement-quality
+purpose: 面向任意中文需求文本的有效性扫描知识库
+current_baseline: 2026-11-03-wiki-structure-v1.0
+default_status: confirmed
+owner: repo-maintainer
+disclosure:
+  entry: _index.md
+  levels: [manifest, space, domain, summary, rule, evidence, learning]
+  max_auto_pages: 8
+  require_source_citation: true
+  routing: domain-first
+  conflict_policy: read_evidence_first
+domains:
+  - id: 10
+    name: 数据录入
+    path: 10-数据录入
+    index: 10-数据录入/_index.md
+    context_pack: 10-数据录入/_domain-context.md
+    disclosure_level: L2
+    status: confirmed
+    page_types: [domain-index, domain-context, rule]
+  - id: 20
+    name: 数据消费
+    path: 20-数据消费
+    index: 20-数据消费/_index.md
+    context_pack: 20-数据消费/_domain-context.md
+    disclosure_level: L2
+    status: confirmed
+    page_types: [domain-index, domain-context, rule]
+  - id: 30
+    name: 流程与状态
+    path: 30-流程与状态
+    index: 30-流程与状态/_index.md
+    context_pack: 30-流程与状态/_domain-context.md
+    disclosure_level: L2
+    status: confirmed
+    page_types: [domain-index, domain-context, rule]
+  - id: 40
+    name: 交互反馈
+    path: 40-交互反馈
+    index: 40-交互反馈/_index.md
+    context_pack: 40-交互反馈/_domain-context.md
+    disclosure_level: L2
+    status: confirmed
+    page_types: [domain-index, domain-context, rule]
+  - id: 50
+    name: 权限与安全
+    path: 50-权限与安全
+    index: 50-权限与安全/_index.md
+    context_pack: 50-权限与安全/_domain-context.md
+    disclosure_level: L2
+    status: confirmed
+    page_types: [domain-index, domain-context, rule]
+  - id: 60
+    name: 集成与接口
+    path: 60-集成与接口
+    index: 60-集成与接口/_index.md
+    context_pack: 60-集成与接口/_domain-context.md
+    disclosure_level: L2
+    status: confirmed
+    page_types: [domain-index, domain-context, rule]
+  - id: 70
+    name: 非功能
+    path: 70-非功能
+    index: 70-非功能/_index.md
+    context_pack: 70-非功能/_domain-context.md
+    disclosure_level: L2
+    status: confirmed
+    page_types: [domain-index, domain-context, rule]
+  - id: 80
+    name: 需求管理
+    path: 80-需求管理
+    index: 80-需求管理/_index.md
+    context_pack: 80-需求管理/_domain-context.md
+    disclosure_level: L2
+    status: confirmed
+    page_types: [domain-index, domain-context, rule]
+  - id: 90
+    name: 业务规则与数据
+    path: 90-业务规则与数据
+    index: 90-业务规则与数据/_index.md
+    context_pack: 90-业务规则与数据/_domain-context.md
+    disclosure_level: L2
+    status: confirmed
+    page_types: [domain-index, domain-context, rule]
+planes:
+  overview: 00-总览
+  learning: 95-学习旅程
+  governance: 96-治理
+  evidence: 99-证据
+page_status_priority:
+  - confirmed-active
+  - confirmed-superseded
+  - draft-active
+  - conflict
+  - deprecated
